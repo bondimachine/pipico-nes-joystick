@@ -17,8 +17,6 @@
     /* 16 bit Button Map */ \
     HID_LOGICAL_MIN    ( 0                                      ) ,\
     HID_LOGICAL_MAX    ( 1                                      ) ,\
-    HID_PHYSICAL_MIN   ( 0                                      ) ,\
-    HID_PHYSICAL_MAX   ( 1                                      ) ,\
     HID_REPORT_SIZE    ( 1                                      ) ,\
     HID_REPORT_COUNT   ( 16                                     ) ,\
     HID_USAGE_PAGE     ( HID_USAGE_PAGE_BUTTON                  ) ,\
@@ -28,7 +26,6 @@
     /* 8 bit DPad/Hat */ \
     HID_USAGE_PAGE     ( HID_USAGE_PAGE_DESKTOP                 ) ,\
     HID_LOGICAL_MAX    ( 7                                      ) ,\
-    HID_PHYSICAL_MAX_N ( 315, 2                                 ) ,\
     HID_REPORT_SIZE    ( 4                                      ) ,\
     HID_REPORT_COUNT   ( 1                                      ) ,\
     HID_UNIT           ( 0x14                                   ) ,\
@@ -76,11 +73,11 @@ Adafruit_USBD_HID usb_hid[] {
 /// HID Gamepad Protocol Report.
 typedef struct TU_ATTR_PACKED {
   uint16_t buttons;  ///< Buttons mask for currently pressed buttons
-  uint8_t  hat;      ///< Delta x  movement of left analog-stick
+  uint8_t  hat;      ///< hat is required for the switch to recognize it. will always report "centered"
   uint8_t  lx;         ///< Delta x  movement of left analog-stick
   uint8_t  ly;         ///< Delta y  movement of left analog-stick
-  uint8_t  rx;         ///< Delta x  movement of left analog-stick
-  uint8_t  ry;         ///< Delta y  movement of left analog-stick
+  uint8_t  rx;         ///< Delta x  movement of right analog-stick (always centered in our case)
+  uint8_t  ry;         ///< Delta y  movement of right analog-stick (always centered in our case)
   uint8_t reserved;
 } hid_short_gamepad_report_t;
 
@@ -130,14 +127,14 @@ void read_pad(uint8_t pad, uint8_t pin_data) {
 
   sleep_us(6);
 
-  buttons[1] = digitalRead(pin_data); // B
+  buttons[2] = digitalRead(pin_data); // A
 
   digitalWrite(PIN_CLOCK, 0);
   sleep_us(6);
   digitalWrite(PIN_CLOCK, 1);
   sleep_us(6);
 
-  buttons[2] = digitalRead(pin_data); // A
+  buttons[1] = digitalRead(pin_data); // B
 
   digitalWrite(PIN_CLOCK, 0);
   sleep_us(6);
